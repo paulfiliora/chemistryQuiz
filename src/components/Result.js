@@ -14,7 +14,9 @@ function Result(props) {
       transitionAppearTimeout={500}
     >
       <div>
-        <strong>{props.quizResult}</strong>
+        <h2>{props.quizResult.header}</h2>
+        <p>{props.quizResult.copy}</p>
+        <div><h3>{props.quizResult.header2}</h3>{props.quizResult.copy2}</div>
       </div>
     </ReactCSSTransitionGroup>
   );
@@ -22,7 +24,7 @@ function Result(props) {
 }
 
 Result.propTypes = {
-  quizResult: React.PropTypes.string.isRequired,
+  quizResult: React.PropTypes.object.isRequired,
 };
 
 export default Result;

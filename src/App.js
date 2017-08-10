@@ -5,6 +5,7 @@ import Quiz from './components/Quiz';
 import Result from './components/Result';
 import logo from './svg/logo.svg';
 import molecules from './tools/molecules';
+import resultOptions from './api/ResultOptions';
 import './App.css';
 
 class App extends Component {
@@ -19,9 +20,13 @@ class App extends Component {
       answerOptions: [],
       answer: '',
       answersCount: {
-        Strategic: 0,
-        Creative: 0,
-        Practical: 0
+        ConfidenceAdd2: 0,
+        ConfidenceAdd1: 0,
+        ConfidenceAdd0: 0,
+        ConfidenceSub1: 0,
+        ConfidenceSub2: 0,
+        NeedAdd1: 0,
+        NeedAdd0: 0,
       },
       result: ''
     };
@@ -30,16 +35,20 @@ class App extends Component {
   }
 
   componentWillMount() {
-    const shuffledAnswerOptions = quizQuestions.map((question) => this.shuffleArray(question.answers));
+    // const shuffledAnswerOptions = quizQuestions.map((question) => this.shuffleArray(question.answers));
+    // const shuffledQuestions = quizQuestions.map((question) => this.shuffleArray(question));
+
     this.setState({
+      // question: shuffledQuestions[0],
       question: quizQuestions[0].question,
-      answerOptions: shuffledAnswerOptions[0]
+      // answerOptions: shuffledAnswerOptions[0]
+      answerOptions: quizQuestions[0].answers
     });
   }
 
-  componentDidMount(){
-    molecules()
-  }
+  // componentDidMount() {
+  // molecules()
+  // }
 
   shuffleArray(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
@@ -95,20 +104,15 @@ class App extends Component {
   }
 
   getResults() {
-    const answersCount = this.state.answersCount;
-    const answersCountKeys = Object.keys(answersCount);
-    const answersCountValues = answersCountKeys.map((key) => answersCount[key]);
-    const maxAnswerCount = Math.max.apply(null, answersCountValues);
-
-    return answersCountKeys.filter((key) => answersCount[key] === maxAnswerCount);
+    const { ConfidenceAdd0, ConfidenceAdd1, ConfidenceAdd2, ConfidenceSub1, ConfidenceSub2, NeedAdd0, NeedAdd1 } = this.state.answersCount;
+    const confidenceTotal = ConfidenceAdd1 + (ConfidenceAdd2 * 2) - ConfidenceSub1 - (ConfidenceSub2 * 2)
+    const needTotal = NeedAdd1
+    const finalResults = { confidence: confidenceTotal, need: needTotal }
+    return finalResults
   }
 
   setResults(result) {
-    if (result.length === 1) {
-      this.setState({ result: result[0] });
-    } else {
-      this.setState({ result: 'While we could not come to a definite answer from the answers provided, we can certainly help guide you etc etc' });
-    }
+    this.setState({ result: result });
   }
 
   renderQuiz() {
@@ -125,42 +129,45 @@ class App extends Component {
   }
 
   renderResult() {
-    const strategicMessage = 'We combine customer insights, brand insights and market insights to create something unique and powerful.'
-    const creativeMessage = 'Once we have the strategy, we work extremely hard to find the right proportions of logic, emotion and empathy.'
-    const practicalMessage = 'The result is Brand Response Advertising. Where brand-building ideas are combined with results-driven disciplines across all channels.'
-    const nonconclusiveMessage = 'One of our representatives in client services should be available to gladly guide you on finding the right match in services for you!';
+    const { confidence, need } = this.state.result
+    console.log(resultOptions[0].ideal.header)
+
+    const strategicMessage = 'Ideal'
+    const creativeMessage = 'Mixed Confident'
+    const practicalMessage = 'Mixed Need'
+    const nonconclusiveMessage = 'Poor Fit';
 
     let message
-    if (this.state.result === 'Strategic') {
-      message = strategicMessage
-    } else if (this.state.result === 'Creative') {
-      message = creativeMessage
-    } else if (this.state.result === 'Practical') {
-      message = practicalMessage
-    } else {
-      message = nonconclusiveMessage
+    if (confidence >= 1 && need >= 2) {
+      message = resultOptions[0].ideal
+    } else if (confidence >= 1 && need < 2) {
+      message = resultOptions[0].mixedConfident
+    } else if (confidence < 1 && need >= 2) {
+      message = resultOptions[0].mixedNeed
+    } else if (confidence < 1 && need < 2) {
+      message = resultOptions[0].poorFit
     }
 
-    return (
-      <Result quizResult={message} />
-    );
-  }
+      return (
+        <Result quizResult={message} />
+      );
+    }
 
-  render() {
-    return (
-      <div className="App">
-        <div className="App-header molecules">
-          <canvas className="canvas">
-            <img src={logo} className="App-logo" alt="logo" />
-            <h2>O2KL Chemistry Quiz Base</h2>
-            <h3>No styling at all yet</h3>
-          </canvas>
+    render() {
+      return (
+        <div className="App">
+          <div className="App-header molecules">
+            <canvas className="canvas">
+              <img src={logo} className="App-logo" alt="logo" />
+              <h2>O2KL Chemistry Quiz Base</h2>
+              <h3>No styling at all yet</h3>
+            </canvas>
+          </div>
+          {this.state.result ? this.renderResult() : this.renderQuiz()}
         </div>
-        {this.state.result ? this.renderResult() : this.renderQuiz()}
-      </div>
-    );
+      );
+    }
+
   }
 
-}
-
-export default App;
+  export default App;
