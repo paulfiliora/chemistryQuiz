@@ -1,9 +1,6 @@
-# React Quiz
-
-[View demo](http://mitchgavan.github.io/react-multi-choice-quiz/)
-
-Created with [Create React App](https://github.com/facebookincubator/create-react-app)
-
+# Client Chemistry Quiz
+A simple react quiz app to match up potential clients with my company's services. Answers are tallied and calculated to result in one of 4 outcomes. The value weight of answers varies per question, so calculations have some small extra math involved. 
+ 
 ## Get Started
 Install dependencies in your project directory with:
 ### `npm install`
